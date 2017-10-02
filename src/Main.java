@@ -35,11 +35,11 @@ public class Main {
         boolean isVacation = booleanAbfrage("Sind Ferien? Ja oder Nein");
         boolean isWeekend = booleanAbfrage("Ist Wochenende? Ja oder Nein");
         */
-        int anzE=130;
-        int anzK=110;
+        int anzE=5;
+        int anzK=2;
         boolean isWeekend=false;
         boolean isVacation=false;
-        int anzahlGutscheine=22;
+        int anzahlGutscheine=3;
         Preisliste preisliste = new Preisliste(isWeekend, isVacation, anzahlGutscheine);
         //_____________________________________________________________________________________________//
         //Calculation
@@ -95,6 +95,7 @@ public class Main {
             return new Verteilung(new ArrayList<Ticket>());
         }else{
             Verteilung vK= new Verteilung(new ArrayList<Ticket>());
+            //Hier werden auch schlechtere Tickets beachtet
             A:for(Ticket t: ticketliste){
                 //System.out.println("AnzE: "+anzErwachsene+", anzJ: "+anzJugendliche);
                 //System.out.println("Ticket: "+t.toString());
@@ -105,6 +106,9 @@ public class Main {
                     Verteilung v2= verteileAufSchwimmbad(ticketliste,anzErwachsene-t.anzE,anzJugendliche-t.anzK);
                     potentziellesVK.addV(v2);
                     if(vK.getPreis()==0||potentziellesVK.getPreis()< vK.getPreis()){
+                        if(potentziellesVK.getPreis()< vK.getPreis()){
+                            System.out.println("siehste");
+                        }
                         vK=potentziellesVK;
                     }
                 }
