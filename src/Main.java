@@ -25,7 +25,7 @@ public class Main {
             System.out.println("Mehr Personen mit bestimmten Alter angegeben als Personen existent sind");
             System.exit(0);
         }
-        if (personenYounger4 != 0 && personenOlder16 != 0){
+        if (personenYounger4 != 0 && personenOlder16 == 0){
             System.out.println("Kinder unter 4 Jahren müssen in Begleitung eines über 16 Jährigen sein");
             System.exit(0);
         }
