@@ -1,11 +1,11 @@
 public class Preisliste {
     boolean isWeekend;
     boolean isVacation;
+    int anzahlGutscheine;
     double singleOlder16 = 3.5;
     double singleYounger16 = 2.5;
-    int anzahlGutscheine;
-    int tagesKarte = 11;
-    int familienKarte = 8;
+    int tagesKarte = 11; //Bis zu 6 Personen, Nur unter der Woche
+    int familienKarte = 8; //2 Erwachsene 2 Younger16 || 1 Erwachsener 3 Younger16
 
     public  Preisliste(boolean isWeekend, boolean isVacation, int anzahlGutscheine){
         this.isWeekend = isWeekend;
