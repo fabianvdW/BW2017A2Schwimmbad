@@ -1,39 +1,41 @@
 public class Ticket {
-    double preis;
-    int countOlder16;
-    int countYounger16;
+    private double preis;
+    int anzE;
+    int anzK;
     String name;
-
-    public Ticket(Boolean older){
-        this.preis = 0;
-        if (older) {
-            this.countOlder16 = 1;
-            this.countYounger16 = 0;
-        }
-        else {
-            this.countOlder16 = 0;
-            this.countYounger16 = 1;
-        }
-        this.name = "Freier Eintritt";
+    boolean GutscheinUse=false;
+    boolean ZehnProzentUse=false;
+    public Ticket(Ticket t){
+        this.preis=t.preis;
+        this.anzE=t.anzE;
+        this.anzK=t.anzK;
+        this.name=t.name;
     }
-
-    public Ticket(double preis, int countOlder16, int countYounger16, String name){
-        this.preis = preis;
-        this.countOlder16 = countOlder16;
-        this.countYounger16 = countYounger16;
-        this.name = name;
+    public Ticket(int anzE, int anzK, String name, double preis){
+       this.anzE=anzE;
+       this.anzK=anzK;
+       this.name=name;
+       this.preis=preis;
+    }
+    public double getPreis(){
+        if(GutscheinUse){
+            return  0;
+        }else if(ZehnProzentUse){
+            return 0.9*preis;
+        }else{
+            return preis;
+        }
     }
 
     @Override
     public String toString(){
         String s = "";
-        if (preis == 0) {
-            if (countOlder16 == 1)
-                s = "Freier Eintritt für einen Erwachsenen";
-            else s = "Freier Eintritt für einen Jugendlichen";
+        s+=name+=": "+this.getPreis()+" Euro für: "+anzE+" Erwachsene und "+anzK+" Jugendliche";
+        if(GutscheinUse){
+            s+=" (Gutschein hierfür benutzen)";
+        }else if(ZehnProzentUse){
+            s+=" (Zehn Prozent auf alle Karten, die das hier stehen haben)";
         }
-        else if (preis > 0)
-            s+=name+=": "+preis+" Euro für: "+countOlder16+" Erwachsene und "+countYounger16+" Jugendliche";
         return s;
     }
 }

@@ -4,11 +4,10 @@ import java.util.ArrayList;
 public class Main {
 
     static double lowestPreis;
-    static ArrayList<Ticket> tickets = new ArrayList<Ticket>();
 
     public static void main(String[] args) {
         //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯//
-        //Var AnzPersonen
+        /*//Var AnzPersonen
         int personenInGruppe = intAbfrage("Wie viele Personen sind in der Gruppe?");
         //Checking whether user input is valid
         if (personenInGruppe == 0){
@@ -35,38 +34,87 @@ public class Main {
         int anzahlGutscheine = intAbfrage("Wie viele Gutscheine besitzen sie?");
         boolean isVacation = booleanAbfrage("Sind Ferien? Ja oder Nein");
         boolean isWeekend = booleanAbfrage("Ist Wochenende? Ja oder Nein");
+        */
+        int anzE=130;
+        int anzK=110;
+        boolean isWeekend=false;
+        boolean isVacation=false;
+        int anzahlGutscheine=22;
         Preisliste preisliste = new Preisliste(isWeekend, isVacation, anzahlGutscheine);
-        anzahlGutscheine = preisliste.anzahlGutscheine;
         //_____________________________________________________________________________________________//
-
         //Calculation
-
-        lowestPreis = ((personenOlder16*preisliste.singleOlder16)+(personenYounger16*preisliste.singleYounger16));
-        if (anzahlGutscheine == 1){
-            if (personenOlder16 >= 1){
-                if (lowestPreis-preisliste.singleOlder16 < lowestPreis*0.9){
-                    lowestPreis = lowestPreis-preisliste.singleOlder16;
-                    tickets.add(new Ticket(true));
+        Verteilung v=verteileAufSchwimmbad(preisliste.availableTickets,anzE,anzK);
+        //Gutscheine auf Verteilung anwenden
+        if(preisliste.anzahlGutscheine>0) {
+            ArrayList<Ticket> tickets = new ArrayList<Ticket>(v.tickets);
+            A:
+            for (int i = 1; i < preisliste.anzahlGutscheine; i++) {
+                //Teuerste EinzelTickets löschen
+                for (Ticket t : tickets) {
+                    if (t.anzE == 1 && t.anzK == 0) {
+                        t.GutscheinUse = true;
+                        tickets.remove(t);
+                        continue A;
+                    }
                 }
-                else lowestPreis = lowestPreis*0.9;
+                for (Ticket t : tickets) {
+                    if (t.anzE == 0 && t.anzK == 1) {
+                        t.GutscheinUse = true;
+                        tickets.remove(t);
+                        continue A;
+                    }
+                }
             }
-            else if (personenOlder16 < 1){
-                if (lowestPreis-preisliste.singleYounger16 < lowestPreis*0.9){
-                    lowestPreis = lowestPreis-preisliste.singleYounger16;
-                    tickets.add(new Ticket(false));
+            double teuersteEinzelKarte = 0;
+            Ticket teuerstesTicket=null;
+            for (Ticket t : tickets) {
+                if ((t.anzK == 0 && t.anzE == 1) || (t.anzK == 1 && t.anzE == 0)) {
+                    if (t.getPreis() > teuersteEinzelKarte) {
+                        teuersteEinzelKarte = t.getPreis();
+                        teuerstesTicket=t;
+                    }
                 }
-                else lowestPreis = lowestPreis*0.9;
+            }
+            double preisAllerTickets=0;
+            for(Ticket t: tickets){
+                preisAllerTickets+=t.getPreis();
+            }
+            if(preisAllerTickets*0.1>teuersteEinzelKarte){
+                for(Ticket t: tickets){
+                    t.ZehnProzentUse=true;
+                }
+            }else{
+                teuerstesTicket.GutscheinUse=true;
             }
         }
-
-        //Ausgabe
-        System.out.println(Math.round(lowestPreis * 100.0) / 100.0 + " Euro sind der kleinstmöglichste Eintrittspreis für ihre Konfiguration!");
-        for(Ticket t : tickets){
-            System.out.println(t);
-        }
+        System.out.println(v.toString());
 
     }
-
+    public static Verteilung verteileAufSchwimmbad(ArrayList<Ticket> ticketliste, int anzErwachsene, int anzJugendliche){
+        if(anzErwachsene+anzJugendliche==0){
+            return new Verteilung(new ArrayList<Ticket>());
+        }else{
+            Verteilung vK= new Verteilung(new ArrayList<Ticket>());
+            A:for(Ticket t: ticketliste){
+                //System.out.println("AnzE: "+anzErwachsene+", anzJ: "+anzJugendliche);
+                //System.out.println("Ticket: "+t.toString());
+                //System.out.println("Käuflich?: "+istTicketKaufbar(t,anzErwachsene,anzJugendliche));
+                if(istTicketKaufbar(t,anzErwachsene,anzJugendliche)){
+                    Verteilung potentziellesVK= new Verteilung(new ArrayList<Ticket>());
+                    potentziellesVK.tickets.add(new Ticket(t));
+                    Verteilung v2= verteileAufSchwimmbad(ticketliste,anzErwachsene-t.anzE,anzJugendliche-t.anzK);
+                    potentziellesVK.addV(v2);
+                    if(vK.getPreis()==0||potentziellesVK.getPreis()< vK.getPreis()){
+                        vK=potentziellesVK;
+                    }
+                }
+            }
+            return vK;
+        }
+    }
+    public static boolean istTicketKaufbar(Ticket t, int anzE, int anzJ){
+        return anzE>=t.anzE&& anzJ>=t.anzK;
+    }
     public static int intAbfrage(String text){
         int var = 0;
         Exception ex;
