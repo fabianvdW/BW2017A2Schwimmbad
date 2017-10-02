@@ -35,17 +35,17 @@ public class Main {
         boolean isVacation = booleanAbfrage("Sind Ferien? Ja oder Nein");
         boolean isWeekend = booleanAbfrage("Ist Wochenende? Ja oder Nein");
         */
-        int anzE=5;
-        int anzK=2;
-        boolean isWeekend=false;
-        boolean isVacation=false;
-        int anzahlGutscheine=3;
+        int anzE = 5;
+        int anzK = 2;
+        boolean isWeekend = false;
+        boolean isVacation = false;
+        int anzahlGutscheine = 3;
         Preisliste preisliste = new Preisliste(isWeekend, isVacation, anzahlGutscheine);
         //_____________________________________________________________________________________________//
         //Calculation
-        Verteilung v=verteileAufSchwimmbad(preisliste.availableTickets,anzE,anzK);
+        Verteilung v = verteileAufSchwimmbad(preisliste.availableTickets, anzE, anzK);
         //Gutscheine auf Verteilung anwenden
-        if(preisliste.anzahlGutscheine>0) {
+        if (preisliste.anzahlGutscheine > 0) {
             ArrayList<Ticket> tickets = new ArrayList<Ticket>(v.tickets);
             A:
             for (int i = 1; i < preisliste.anzahlGutscheine; i++) {
@@ -66,60 +66,64 @@ public class Main {
                 }
             }
             double teuersteEinzelKarte = 0;
-            Ticket teuerstesTicket=null;
+            Ticket teuerstesTicket = null;
             for (Ticket t : tickets) {
                 if ((t.anzK == 0 && t.anzE == 1) || (t.anzK == 1 && t.anzE == 0)) {
                     if (t.getPreis() > teuersteEinzelKarte) {
                         teuersteEinzelKarte = t.getPreis();
-                        teuerstesTicket=t;
+                        teuerstesTicket = t;
                     }
                 }
             }
-            double preisAllerTickets=0;
-            for(Ticket t: tickets){
-                preisAllerTickets+=t.getPreis();
+            double preisAllerTickets = 0;
+            for (Ticket t : tickets) {
+                preisAllerTickets += t.getPreis();
             }
-            if(preisAllerTickets*0.1>teuersteEinzelKarte){
-                for(Ticket t: tickets){
-                    t.ZehnProzentUse=true;
+            if (preisAllerTickets * 0.1 > teuersteEinzelKarte) {
+                for (Ticket t : tickets) {
+                    t.ZehnProzentUse = true;
                 }
-            }else{
-                teuerstesTicket.GutscheinUse=true;
+            } else {
+                teuerstesTicket.GutscheinUse = true;
             }
         }
         System.out.println(v.toString());
 
     }
-    public static Verteilung verteileAufSchwimmbad(ArrayList<Ticket> ticketliste, int anzErwachsene, int anzJugendliche){
-        if(anzErwachsene+anzJugendliche==0){
+
+    public static Verteilung verteileAufSchwimmbad(ArrayList<Ticket> ticketliste, int anzErwachsene, int anzJugendliche) {
+        if (anzErwachsene + anzJugendliche == 0) {
             return new Verteilung(new ArrayList<Ticket>());
-        }else{
-            Verteilung vK= new Verteilung(new ArrayList<Ticket>());
+        } else {
+            Verteilung vK = new Verteilung(new ArrayList<Ticket>());
             //Hier werden auch schlechtere Tickets beachtet
-            A:for(Ticket t: ticketliste){
+            A:
+            for (Ticket t : ticketliste) {
                 //System.out.println("AnzE: "+anzErwachsene+", anzJ: "+anzJugendliche);
                 //System.out.println("Ticket: "+t.toString());
                 //System.out.println("Käuflich?: "+istTicketKaufbar(t,anzErwachsene,anzJugendliche));
-                if(istTicketKaufbar(t,anzErwachsene,anzJugendliche)){
-                    Verteilung potentziellesVK= new Verteilung(new ArrayList<Ticket>());
+                if (istTicketKaufbar(t, anzErwachsene, anzJugendliche)) {
+                    Verteilung potentziellesVK = new Verteilung(new ArrayList<Ticket>());
                     potentziellesVK.tickets.add(new Ticket(t));
-                    Verteilung v2= verteileAufSchwimmbad(ticketliste,anzErwachsene-t.anzE,anzJugendliche-t.anzK);
+                    Verteilung v2 = verteileAufSchwimmbad(ticketliste, anzErwachsene - t.anzE, anzJugendliche - t.anzK);
                     potentziellesVK.addV(v2);
-                    if(vK.getPreis()==0||potentziellesVK.getPreis()< vK.getPreis()){
-                        if(potentziellesVK.getPreis()< vK.getPreis()){
+                    if (vK.getPreis() == 0 || potentziellesVK.getPreis() < vK.getPreis()) {
+                        if (potentziellesVK.getPreis() < vK.getPreis()) {
                             System.out.println("siehste");
                         }
-                        vK=potentziellesVK;
+                        vK = potentziellesVK;
                     }
                 }
             }
             return vK;
         }
     }
-    public static boolean istTicketKaufbar(Ticket t, int anzE, int anzJ){
-        return anzE>=t.anzE&& anzJ>=t.anzK;
+
+    public static boolean istTicketKaufbar(Ticket t, int anzE, int anzJ) {
+        return anzE >= t.anzE && anzJ >= t.anzK;
     }
-    public static int intAbfrage(String text){
+
+    public static int intAbfrage(String text) {
         int var = 0;
         Exception ex;
         do {
@@ -130,19 +134,19 @@ public class Main {
                 ex = e;
                 JOptionPane.showMessageDialog(null, "Diese Frage ist nur mit Zahlen zu beantworten!");
             }
-        }while(ex != null);
+        } while (ex != null);
         return var;
     }
 
-    public static boolean booleanAbfrage(String text){
+    public static boolean booleanAbfrage(String text) {
         String userInput;
-        do{
+        do {
             userInput = JOptionPane.showInputDialog(null, text);
-        }while(!userInput.equals("Ja")&&!userInput.equals("Nein")&&!userInput.equals("nein")&&!userInput.equals("ja"));
-        if (userInput.equals("ja")||userInput.equals("Ja")){
-            return true;
         }
-        else
+        while (!userInput.equals("Ja") && !userInput.equals("Nein") && !userInput.equals("nein") && !userInput.equals("ja"));
+        if (userInput.equals("ja") || userInput.equals("Ja")) {
+            return true;
+        } else
             return false;
     }
 }
